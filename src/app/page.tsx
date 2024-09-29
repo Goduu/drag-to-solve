@@ -1,4 +1,4 @@
-import InteractiveStoryGrid from "@/components/draggable-area";
+import InteractiveStoryGrid from "@/components/draggable-area/draggable-area";
 import { ModeToggle } from "@/components/ui/theme-toggle";
 import Image from "next/image";
 
