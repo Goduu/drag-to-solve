@@ -1,20 +1,30 @@
 "use client"
-import { MutableRefObject, useCallback } from "react";
+import { MutableRefObject, useCallback, useEffect } from "react";
 import { NodeType, NodeItem } from "../types";
-import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { LinkDots } from "./link-dots";
 import { cn } from "@/lib/utils";
+import { useDraggable } from "@dnd-kit/core";
 
 interface NodeProps {
     item: NodeItem;
     type: NodeType
+    setNodeReference: (item: NodeItem, node: MutableRefObject<HTMLElement | null>) => void
     onDoubleClick: () => void;
     onDotClick: (node: MutableRefObject<HTMLElement | null>, item: NodeItem) => void;
 }
 
-export const Node: React.FC<NodeProps> = ({ item, type, onDoubleClick, onDotClick }) => {
-    const { attributes, listeners, setNodeRef, node, transform } = useDraggable({ id: item.id });
+export const Node: React.FC<NodeProps> = ({ item, type, setNodeReference, onDoubleClick, onDotClick }) => {
+    const { attributes, listeners, setNodeRef, node, transform } = useDraggable({
+        id: item.id,
+    });
+
+    useEffect(() => {
+        if (!item.nodeRef) {
+            setNodeReference(item, node);
+        }
+    }, [node]);
+
     const style = transform ? {
         transform: CSS.Translate.toString(transform),
     } : undefined;

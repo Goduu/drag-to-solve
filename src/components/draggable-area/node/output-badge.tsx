@@ -1,12 +1,12 @@
 import { Badge } from '@/components/ui/badge'
 import React, { FC } from 'react'
-import { OutputItem } from '../../types'
+import { OutputItem } from '../types'
 
-type OutputProps = {
+type OutputBadgeProps = {
   output: OutputItem
 }
 
-export const Output: FC<OutputProps> = ({ output }) => {
+export const OutputBadge: FC<OutputBadgeProps> = ({ output }) => {
 
   return (
     <Badge variant="outline" className={`cursor-pointer ${output.color}`}>

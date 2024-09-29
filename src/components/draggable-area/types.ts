@@ -35,21 +35,23 @@ export interface NodeItem {
     code: string;
     type: NodeType;
     position: { x: number; y: number };
-    input: any;
+    inputs: InputItem[];
     outputs: OutputItem[];
+    nodeRef?: MutableRefObject<HTMLElement | null>;
 }
 
-export interface Link {
-    startNodeRef: MutableRefObject<HTMLElement | null>;
-    endNodeRef: MutableRefObject<HTMLElement | null>;
+export type InputItem = {
+    value: any;
     label: string;
     color: BgColor;
 }
 
 export type OutputItem = {
+    startNodeRef: MutableRefObject<HTMLElement | null>;
+    endNodeRef?: MutableRefObject<HTMLElement | null>;
+    value: any;
     label: string;
-    color: BgColor
-    linkedNode?: NodeItem
+    color: BgColor;
 }
 
 export type LinkStart = {

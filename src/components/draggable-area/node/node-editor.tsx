@@ -1,27 +1,44 @@
-import React, { FC, useState } from 'react'
+import React, { Dispatch, FC, SetStateAction } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { getRandomBgColor, NodeItem, OutputItem } from '../types';
 import { Button } from '../../ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Output } from './output/output';
+import { OutputBadge } from './output-badge';
+import { InputBadge } from './input-badge';
+import CodeEditor from './code-editor';
 
 type NodeEditorProps = {
     editingItem: NodeItem | null
-    setEditingItem: (item: NodeItem | null) => void
+    setEditingItem: Dispatch<SetStateAction<NodeItem | null>>
     handleSaveEdit: (item: NodeItem) => void
 }
 export const NodeEditor: FC<NodeEditorProps> = ({ editingItem, setEditingItem, handleSaveEdit }) => {
 
     const handleAddOutput = () => {
-        editingItem && setEditingItem({
+        editingItem?.nodeRef && setEditingItem({
             ...editingItem,
             outputs: [...editingItem.outputs,
-            { label: `Output${editingItem.outputs.length}`, color: getRandomBgColor() }
+            { label: `output${editingItem.outputs.length}`, color: getRandomBgColor(), startNodeRef: editingItem.nodeRef, value: null }
             ]
         }
         )
+    }
+
+    const handleAddInput = () => {
+        editingItem?.nodeRef && setEditingItem(prev => (
+            prev ? {
+                ...prev,
+                inputs: [
+                    ...prev.inputs,
+                    { label: `input${editingItem.inputs.length}`, color: getRandomBgColor(), value: null }
+                ]
+            } : prev
+        ))
+    }
+
+    const handleSetCode = (code: string) => {
+        editingItem && setEditingItem(prev => (prev ? { ...prev, code } : prev))
     }
 
     return (
@@ -36,45 +53,23 @@ export const NodeEditor: FC<NodeEditorProps> = ({ editingItem, setEditingItem, h
                     onChange={(e) => editingItem && setEditingItem({ ...editingItem, name: e.target.value })}
                     placeholder="Item Name"
                 />
-                <div>
-                    Input:
-                    {JSON.stringify(editingItem?.input)}
+
+                <div className='flex gap-2 flex-wrap'>
+                    {editingItem?.inputs.map(input => (
+                        <InputBadge input={input} />
+                    ))}
+                    <Badge variant="outline" className="cursor-pointer" onClick={handleAddInput}> Add Input </Badge>
                 </div>
-                {editingItem?.type === "if" && (
-                    <IfNodeContent />
-                )}
-                <div>
-                    Output:
-                    {JSON.stringify(editingItem?.outputs)}
-                </div>
-                <Button variant="outline" onClick={handleAddOutput}> Add Output </Button>
+
                 <div className='flex gap-2 flex-wrap'>
                     {editingItem?.outputs.map(output => (
-                        <Output output={output} />
+                        <OutputBadge output={output} />
                     ))}
+                    <Badge variant="outline" className="cursor-pointer" onClick={handleAddOutput}> Add Output </Badge>
                 </div>
-                <Textarea
-                    value={editingItem?.code}
-                    onChange={(e) => editingItem && setEditingItem({ ...editingItem, code: e.target.value })}
-                    placeholder="Item Code"
-                />
+                <CodeEditor inputs={editingItem?.inputs} outputs={editingItem?.outputs} code={editingItem?.code || ""} setCode={handleSetCode} />
                 <Button onClick={() => editingItem && handleSaveEdit(editingItem)}>Save</Button>
             </DialogContent>
         </Dialog>
-    )
-}
-
-
-const IfNodeContent = () => {
-    const conditionals = ["===", "<=", ">=", "<", ">", "!==", "!"]
-
-    return (
-        <div className='flex gap-2 bg-pi-500'>
-            {conditionals.map(cond => (
-                <Badge variant="outline" className='cursor-pointer'>
-                    {cond}
-                </Badge>
-            ))}
-        </div>
     )
 }

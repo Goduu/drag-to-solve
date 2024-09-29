@@ -1,23 +1,19 @@
 "use client"
-import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import React, { useRef } from 'react';
+import { DndContext } from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { Button } from '@/components/ui/button';
 import Xarrow from 'react-xarrows';
-import { convertTailwindColorToHex, Link, NodeItem } from './types';
+import { convertTailwindColorToHex } from './types';
 import { Node } from './node/node';
 import { DroppableArea } from '../droppable-area';
-import { useDetectEsc } from '@/lib/useDetectOuterClickAndEsc';
 import { NodeEditor } from './node/node-editor';
 import { useLinkHandlers } from './useLinkHandlers';
-
-const GRID_SIZE = 20
 
 const InteractiveStoryGrid: React.FC = () => {
     const screenRef = useRef(null)
     const mousePointerDivRef = useRef<HTMLDivElement | null>(null); // Create a reference to the div
-    const { handleDotClick, handleDragEnd, handleRun, handleSaveEdit, handleDoubleClick, setEditingItem, editingItem, items, links, mousePosition, linkStart } = useLinkHandlers()
-
+    const { handleDotClick, handleDragEnd, handleRun, handleSaveEdit, handleDoubleClick, setEditingItem, editingItem, items, mousePosition, linkStart, setNodeRef } = useLinkHandlers()
 
     return (
         <>
@@ -28,13 +24,30 @@ const InteractiveStoryGrid: React.FC = () => {
                 >
                     <DroppableArea>
                         {items.map(item => (
-                            <Node
-                                key={item.id}
-                                item={item}
-                                onDoubleClick={() => handleDoubleClick(item)}
-                                onDotClick={handleDotClick}
-                                type={item.type}
-                            />
+                            <>
+                                <Node
+                                    key={item.id}
+                                    item={item}
+                                    onDoubleClick={() => handleDoubleClick(item)}
+                                    onDotClick={handleDotClick}
+                                    setNodeReference={setNodeRef}
+                                    type={item.type}
+                                />
+                                {item.outputs.map((output, index) => (
+                                    output.endNodeRef &&
+                                    <Xarrow
+                                        key={index}
+                                        start={output.startNodeRef}
+                                        end={output.endNodeRef}
+                                        color={convertTailwindColorToHex(output.color)}
+                                        strokeWidth={2}
+                                        path="smooth"
+                                        curveness={0.3}
+                                        labels={output.label}
+                                    />
+                                ))
+                                }
+                            </>
                         ))}
 
                         {linkStart && (
@@ -57,23 +70,9 @@ const InteractiveStoryGrid: React.FC = () => {
                                 />
                             </>
                         )}
-                        {links.map((link, index) => {
-                            return <Xarrow
-                                key={index}
-                                start={link.startNodeRef}
-                                end={link.endNodeRef}
-                                color={convertTailwindColorToHex(link.color)}
-                                strokeWidth={2}
-                                path="smooth"
-                                curveness={0.3}
-                                labels={link.label}
-                            />
-                        }
-                        )}
-
                     </DroppableArea>
                 </DndContext>
-                <Button onClick={handleRun} className="mt-4 mx-auto">Run Story</Button>
+                <Button onClick={() => console.log('items', items)} className="mt-4 mx-auto">Run Story</Button>
             </div>
             <NodeEditor editingItem={editingItem} setEditingItem={setEditingItem} handleSaveEdit={handleSaveEdit} />
         </>
