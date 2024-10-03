@@ -40,22 +40,30 @@ export interface NodeItem {
     nodeRef?: MutableRefObject<HTMLElement | null>;
 }
 
+export type VariableItem = {
+    id: string,
+    label: string
+}
+
 export type InputItem = {
-    value: any;
-    label: string;
-    color: BgColor;
+    id: string,
+    value: any,
+    label: string,
+    color: BgColor,
+    outputReferenceNode: NodeItem
 }
 
 export type OutputItem = {
-    startNodeRef: MutableRefObject<HTMLElement | null>;
-    endNodeRef?: MutableRefObject<HTMLElement | null>;
-    value: any;
-    label: string;
-    color: BgColor;
+    id: string,
+    startNodeRef: MutableRefObject<HTMLElement | null>,
+    endNodeRef?: MutableRefObject<HTMLElement | null>,
+    value: any,
+    label: string,
+    color: BgColor,
 }
 
 export type LinkStart = {
-    node: MutableRefObject<HTMLElement | null>;
+    node: NodeItem
     output: OutputItem;
 }
 

@@ -11,7 +11,7 @@ interface NodeProps {
     type: NodeType
     setNodeReference: (item: NodeItem, node: MutableRefObject<HTMLElement | null>) => void
     onDoubleClick: () => void;
-    onDotClick: (node: MutableRefObject<HTMLElement | null>, item: NodeItem) => void;
+    onDotClick: (node: NodeItem) => void;
 }
 
 export const Node: React.FC<NodeProps> = ({ item, type, setNodeReference, onDoubleClick, onDotClick }) => {
@@ -33,7 +33,7 @@ export const Node: React.FC<NodeProps> = ({ item, type, setNodeReference, onDoub
 
     const handleDotClick = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
-        onDotClick(node, item);
+        onDotClick(item);
     }, [item.id, onDotClick]);
 
     return (

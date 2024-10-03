@@ -9,11 +9,23 @@ import { Node } from './node/node';
 import { DroppableArea } from '../droppable-area';
 import { NodeEditor } from './node/node-editor';
 import { useLinkHandlers } from './useLinkHandlers';
+import { VariableEditor } from './node/variable-editor';
 
 const InteractiveStoryGrid: React.FC = () => {
     const screenRef = useRef(null)
     const mousePointerDivRef = useRef<HTMLDivElement | null>(null); // Create a reference to the div
-    const { handleDotClick, handleDragEnd, handleRun, handleSaveEdit, handleDoubleClick, setEditingItem, editingItem, items, mousePosition, linkStart, setNodeRef } = useLinkHandlers()
+    const { handleDotClick,
+        handleDragEnd,
+        setVariableEditingItem,
+        variableEditingItem,
+        handleSetVariable,
+        handleSaveEdit,
+        handleDoubleClick,
+        setEditingItem,
+        editingItem,
+        items,
+        mousePosition,
+        linkStart, setNodeRef } = useLinkHandlers()
 
     return (
         <>
@@ -43,24 +55,31 @@ const InteractiveStoryGrid: React.FC = () => {
                                         strokeWidth={2}
                                         path="smooth"
                                         curveness={0.3}
-                                        labels={output.label}
-                                    />
+                                        labels={
+                                            <div onClick={() => {
+                                                console.log('setting', { id: output.id, label: output.label })
+                                                setVariableEditingItem({ id: output.id, label: output.label })
+                                            }} className='cursor-pointer'>
+                                                {output.label}
+                                            </div>
+                                        } />
                                 ))
                                 }
                             </>
                         ))}
 
-                        {linkStart && (
+                        {linkStart?.node.nodeRef && (
                             <>
                                 {mousePointerDivRef.current &&
                                     <Xarrow
-                                        start={linkStart.node}
+                                        start={linkStart.node.nodeRef}
                                         end={mousePointerDivRef}
                                         color={convertTailwindColorToHex(linkStart.output.color)}
                                         strokeWidth={2}
                                         path="smooth"
                                         curveness={0.3}
                                         labels={linkStart.output.label}
+
                                     />
                                 }
                                 <div
@@ -75,6 +94,7 @@ const InteractiveStoryGrid: React.FC = () => {
                 <Button onClick={() => console.log('items', items)} className="mt-4 mx-auto">Run Story</Button>
             </div>
             <NodeEditor editingItem={editingItem} setEditingItem={setEditingItem} handleSaveEdit={handleSaveEdit} />
+            <VariableEditor editingVariable={variableEditingItem} setEditingItem={setVariableEditingItem} handleSaveEdit={handleSetVariable} />
         </>
 
     );

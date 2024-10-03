@@ -15,28 +15,6 @@ type NodeEditorProps = {
 }
 export const NodeEditor: FC<NodeEditorProps> = ({ editingItem, setEditingItem, handleSaveEdit }) => {
 
-    const handleAddOutput = () => {
-        editingItem?.nodeRef && setEditingItem({
-            ...editingItem,
-            outputs: [...editingItem.outputs,
-            { label: `output${editingItem.outputs.length}`, color: getRandomBgColor(), startNodeRef: editingItem.nodeRef, value: null }
-            ]
-        }
-        )
-    }
-
-    const handleAddInput = () => {
-        editingItem?.nodeRef && setEditingItem(prev => (
-            prev ? {
-                ...prev,
-                inputs: [
-                    ...prev.inputs,
-                    { label: `input${editingItem.inputs.length}`, color: getRandomBgColor(), value: null }
-                ]
-            } : prev
-        ))
-    }
-
     const handleSetCode = (code: string) => {
         editingItem && setEditingItem(prev => (prev ? { ...prev, code } : prev))
     }
@@ -55,17 +33,17 @@ export const NodeEditor: FC<NodeEditorProps> = ({ editingItem, setEditingItem, h
                 />
 
                 <div className='flex gap-2 flex-wrap'>
+                    Inputs:
                     {editingItem?.inputs.map(input => (
                         <InputBadge input={input} />
                     ))}
-                    <Badge variant="outline" className="cursor-pointer" onClick={handleAddInput}> Add Input </Badge>
                 </div>
 
                 <div className='flex gap-2 flex-wrap'>
+                    Outputs:
                     {editingItem?.outputs.map(output => (
                         <OutputBadge output={output} />
                     ))}
-                    <Badge variant="outline" className="cursor-pointer" onClick={handleAddOutput}> Add Output </Badge>
                 </div>
                 <CodeEditor inputs={editingItem?.inputs} outputs={editingItem?.outputs} code={editingItem?.code || ""} setCode={handleSetCode} />
                 <Button onClick={() => editingItem && handleSaveEdit(editingItem)}>Save</Button>

@@ -18,16 +18,19 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ code, setCode, inputs, outputs 
         textRef.current?.focus();
     }
 
+    const inputsAndOutputs = [...inputs || [], ...outputs || []]
 
     return (
         <div className="p-4 border rounded-lg">
-            <p className="font-bold mb-2">Variables:</p>
-            <div className="mb-4 gap-2 flex flex-wrap">
-                {[...inputs || [], ...outputs || []].map((variable) => (
-                    <Badge key={variable.label} variant="outline" onClick={() => addBadge(variable.label)} className={`cursor-pointer ${variable.color}`}>
-                        {variable.label}
-                    </Badge>
-                ))}
+            <div className='min-h-20'>
+                <p className="font-bold mb-2">Variables:</p>
+                <div className="mb-4 gap-2 flex flex-wrap">
+                    {inputsAndOutputs.map((variable) => (
+                        <Badge key={variable.label} variant="outline" onClick={() => addBadge(variable.label)} className={`cursor-pointer ${variable.color}`}>
+                            {variable.label}
+                        </Badge>
+                    ))}
+                </div>
             </div>
             <div>
                 <h3 className="text-lg font-semibold mb-2">Code:</h3>
